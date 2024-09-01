@@ -1,0 +1,73 @@
+<div class="bg-gray-100 min-h-screen flex flex-col">
+  <nav class="bg-blue-600 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="text-white text-2xl font-bold">Database Details</div>
+      <div class="flex items-center space-x-4">
+        <a routerLink="/" class="text-white hover:text-blue-300">Home</a>
+        <a href="#" class="text-white hover:text-blue-300">About</a>
+        <a href="#" class="text-white hover:text-blue-300">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto p-6 flex-1">
+    <button
+      class="bg-gray-500 text-white font-bold py-2 px-4 rounded-full mb-6 hover:bg-gray-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
+      (click)="goBack()"
+    >
+      Back
+    </button>
+    <div class="bg-white shadow-lg rounded-lg p-6">
+      <h1 class="text-3xl font-bold text-gray-800 mb-4">
+        Database: {{ database.databaseName }}
+      </h1>
+
+      <div class="mb-6">
+        <button
+          class="bg-blue-500 text-white font-bold py-2 px-4 rounded-full hover:bg-blue-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
+          (click)="toggleTokenVisibility()"
+        >
+          {{ showTokens ? "Hide Tokens" : "Show Tokens" }}
+        </button>
+      </div>
+
+      @if(showTokens){
+      <div class="mb-6 space-y-4">
+        <div class="relative">
+          <button
+            class="absolute right-2 top-2 bg-gray-200 text-gray-800 px-2 py-1 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+            (click)="copyToClipboard(database.databaseAccessToken!)"
+          >
+            Copy
+          </button>
+          <strong class="text-gray-700">Access Token:</strong>
+          <p
+            class="bg-gray-200 p-2 rounded text-sm max-w-screen-xl truncate overflow-hidden"
+          >
+            {{ database.databaseAccessToken }}
+          </p>
+        </div>
+
+      </div>
+      }
+      <div class="flex flex-col max-w-fit gap-4">
+        <button
+          class="bg-green-500 text-white font-bold py-2 px-4 rounded-full hover:bg-green-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-opacity-50"
+          (click)="openSchemaInfo()"
+        >
+          Open Schema Info
+        </button>
+        <button
+          class="bg-green-500 text-white font-bold py-2 px-4 rounded-full hover:bg-green-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-opacity-50"
+          (click)="openSchemaInfo()"
+        >
+          Open endpoints
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-gray-800 text-white text-center py-4 mt-auto">
+    <p>&copy; 2024 Booking System. All rights reserved.</p>
+  </footer>
+</div>
