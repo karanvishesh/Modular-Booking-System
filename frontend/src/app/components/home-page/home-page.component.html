@@ -1,0 +1,61 @@
+<div class="bg-gray-100 font-sans flex flex-col min-h-screen">
+  <nav class="bg-blue-600 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="text-white text-2xl font-bold">Booking System</div>
+      <div class="flex items-center space-x-4">
+        <a href="#" class="text-white hover:text-blue-300">Home</a>
+        <a href="#" class="text-white hover:text-blue-300">About</a>
+        <a href="#" class="text-white hover:text-blue-300">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto p-6 flex-1">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-3xl font-bold text-gray-800">Welcome to Your Dashboard</h1>
+      <div class="text-gray-700">Hi Vishesh</div>
+    </div>
+
+    <div class="bg-white shadow-lg rounded-lg p-6">
+      <div class="flex justify-between items-center mb-4">
+        <button
+          class="bg-red-500 text-white font-bold py-2 px-4 rounded-full hover:bg-red-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-opacity-50"
+          (click)="logout()"
+        >
+          Logout
+        </button>
+        <button
+          class="bg-blue-500 text-white font-bold py-2 px-4 rounded-full hover:bg-blue-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
+          (click)="openCreateDatabaseDialog()"
+        >
+          Create Database
+        </button>
+      </div>
+
+      @if(databases.length > 0) {
+      <div>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Your Databases</h2>
+        <ul class="space-y-4">
+          @for(database of databases; track database) {
+          <li class="flex justify-between items-center p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
+            <span class="text-gray-800 font-medium">{{ database.databaseName }}</span>
+            <button
+              class="bg-green-500 text-white font-bold py-2 px-4 rounded-full hover:bg-green-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-opacity-50"
+              (click)="viewDatabase(database)"
+            >
+              View
+            </button>
+          </li>
+          }
+        </ul>
+      </div>
+      } @else {
+      <p class="text-gray-600">You currently have no databases. {{ errorMessage }}</p>
+      }
+    </div>
+  </div>
+
+  <footer class="bg-gray-800 text-white text-center py-4 mt-auto">
+    <p>&copy; 2024 Booking System. All rights reserved.</p>
+  </footer>
+</div>
