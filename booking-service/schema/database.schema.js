@@ -17,10 +17,6 @@ databaseSchema.methods.generateAccessToken = async function () {
       databaseName: this.databaseName,
       userId: this.userId,
     },
-    // process.env.ACCESS_TOKEN_SECRET,
-    // {
-    //   expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-    // }
   );
 };
 

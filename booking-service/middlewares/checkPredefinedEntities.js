@@ -18,7 +18,6 @@ const createPredefinedEntities = async (dbKey, totalCount) => {
     });
   }
   await BookableEntity.insertMany(entities);
-  console.log('Predefined bookable entities created.');
 };
 
 export const checkPredefinedEntities = expressAsyncHandler(async (req, res, next) => {

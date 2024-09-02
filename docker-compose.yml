@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ./auth-service
+    networks:
+      - my-network
+
+  db-management-service:
+    container_name: db-management-service
+    build:
+      context: ./db-management-service
+    networks:
+      - my-network
+
+  booking-service:
+    container_name: booking-service
+    build:
+      context: ./booking-service
+    networks:
+      - my-network
+
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8000:8000"
+    networks:
+      - my-network
+
+networks:
+  my-network:

@@ -3,7 +3,6 @@ import createModel from '../utils/createmodel.js';
 import bookableEntitySchema from '../schema/bookableEntity.schema.js';
 import bookingSchema from '../schema/booking.schema.js';
 import mongoose from 'mongoose';
-import APIError from '../utils/apiError.js';
 
 export const bookEntity = expressAsyncHandler(async (req, res) => {
   const { bookableEntityId, startTime, endTime } = req.body;
@@ -24,7 +23,6 @@ export const bookEntity = expressAsyncHandler(async (req, res) => {
   let bookableEntityObjectId;
   try {
     bookableEntityObjectId = new mongoose.Types.ObjectId(bookableEntityId);
-    
   } catch (error) {
     return res.status(400).json({ status: 400, message: "Invalid bookable entity ID" });
   }
@@ -97,7 +95,7 @@ export const cancelBooking = expressAsyncHandler(async (req, res) => {
   const dbKey = req.dbKey;
 
   if (!id) {
-    throw new APIError(400, "Booking ID is required"); 
+    return res.status(400).json({ error: "Booking ID is required" }); 
   }
 
   const BookableEntity = createModel(dbKey, 'BookableEntity', bookableEntitySchema);
@@ -105,19 +103,16 @@ export const cancelBooking = expressAsyncHandler(async (req, res) => {
 
   const bookingObject = await Booking.findById(id);
   if (!bookingObject) {
-    throw new APIError(404, "Booking doesn't exist"); 
+    return res.status(404).json({ error: "Booking doesn't exist" });
   }
-
 
   const entity = await BookableEntity.findById(bookingObject.bookableEntityId);
   if (!entity) {
-    throw new APIError(404, "Entity doesn't exist");
+    return res.status(404).json({ error: "Entity doesn't exist" }); 
   }
-
 
   entity.status = "available";
   await entity.save();
-
 
   await Booking.deleteOne({ _id: id });
 
@@ -132,28 +127,33 @@ export const getBookingDetails = expressAsyncHandler(async (req, res) => {
   const { id } = req.params; 
   const dbKey = req.dbKey;
   
-  const Booking = createModel(dbKey, 'Booking', bookingSchema);
-  
-  const bookingDetails = await Booking.aggregate([
-    { $match: { _id: new mongoose.Types.ObjectId(id) } },
-    { 
-      $lookup: {
-        from: 'users',
-        localField: 'bookerId',
-        foreignField: '_id',
-        as: 'user'
+  let bookingDetails;
+  try {
+    const Booking = createModel(dbKey, 'Booking', bookingSchema);
+    
+    bookingDetails = await Booking.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(id) } },
+      { 
+        $lookup: {
+          from: 'users',
+          localField: 'bookerId',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      { $unwind: '$user' },
+      {
+        $project: {
+          _id: 1,
+          startTime: 1,
+          endTime: 1,
+          'user.username': 1
+        }
       }
-    },
-    { $unwind: '$user' },
-    {
-      $project: {
-        _id: 1,
-        startTime: 1,
-        endTime: 1,
-        'user.username': 1
-      }
-    }
-  ]);
+    ]);
+  } catch (error) {
+    return res.status(400).json({ status: 400, message: "Invalid booking ID" });
+  }
 
   if (bookingDetails.length === 0) {
     return res.status(404).json({
@@ -184,22 +184,38 @@ export const updateBooking = expressAsyncHandler(async (req, res) => {
   const Booking = createModel(dbKey, 'Booking', bookingSchema);
   const BookableEntity = createModel(dbKey, 'BookableEntity', bookableEntitySchema);
 
-
   const booking = await Booking.findById(id);
-
   if (!booking) {
     return res.status(404).json({ status: 404, message: "Booking not found" });
   }
-
 
   const entity = await BookableEntity.findById(booking.bookableEntityId);
   if (!entity) {
     return res.status(404).json({ status: 404, message: "Bookable entity not found" });
   }
 
-  booking.startTime = startTime || booking.startTime;
-  booking.endTime = endTime || booking.endTime;
+  const newStartTime = startTime || booking.startTime;
+  const newEndTime = endTime || booking.endTime;
 
+  if (newEndTime <= newStartTime) {
+    return res.status(400).json({ status: 400, message: "End time must be after start time" });
+  }
+
+  const overlappingBookings = await Booking.find({
+    bookableEntityId: booking.bookableEntityId,
+    _id: { $ne: id },
+    $or: [
+      { startTime: { $lt: newEndTime }, endTime: { $gt: newStartTime } },
+      { endTime: { $gt: newStartTime }, startTime: { $lt: newEndTime } }
+    ]
+  });
+
+  if (overlappingBookings.length > 0) {
+    return res.status(400).json({ status: 400, message: "The entity is already booked during the requested time" });
+  }
+
+  booking.startTime = newStartTime;
+  booking.endTime = newEndTime;
 
   await booking.save();
 

@@ -3,14 +3,14 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 import expressAsyncHandler from "express-async-handler";
 
-const verifyJWT = expressAsyncHandler(async (req, _, next) => {
+const verifyJWT = expressAsyncHandler(async (req, res, next) => {
   try {
-    const token  = 
+    const token = 
       req.cookies?.accessToken ||
       req.header("Authorization")?.replace("Bearer ", "");
 
     if (!token) {
-      throw new APIError(401, "Unauthorized request");
+      return res.status(401).json(new APIError(401, "Unauthorized request"));
     }
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
@@ -20,14 +20,16 @@ const verifyJWT = expressAsyncHandler(async (req, _, next) => {
     );
 
     if (!user) {
-      throw new APIError(401, "Invalid Access Token");
+      return res.status(401).json(new APIError(401, "Invalid Access Token"));
     }
+
     req.user = user;
     next();
   } 
   catch (error) {
-    throw new APIError(401, error?.message || "Invalid access token");
+    console.error("JWT verification error: ", error);
+    return res.status(401).json(new APIError(401, error?.message || "Invalid access token"));
   }
 });
 
-export { verifyJWT};
+export { verifyJWT };
