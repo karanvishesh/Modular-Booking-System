@@ -29,6 +29,10 @@ app.use(express.urlencoded({extended:true, limit:"16kb"}))
 
 app.use(cookieParser());
 
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Welcome to the Modular Booking System API!' });
+});
+
 import userRouter from "./routes/user.routes.js";
 
 app.use("/api/v1/user", userRouter);
