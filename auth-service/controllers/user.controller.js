@@ -1,4 +1,3 @@
-import APIError from "../utils/apiError.js";
 import expressAsyncHandler from "express-async-handler";
 import User from "../models/user.model.js";
 import APIResponse from "../utils/apiResponse.js";
@@ -6,8 +5,7 @@ import jwt from "jsonwebtoken";
 
 async function getAccessAndRefreshToken(userId) {
   const user = await User.findById(userId);
-  if (!user) throw new APIError(401, "Invalid User");
-
+  if (!user) return { error: "Invalid User" };
   const accessToken = await user.generateAccessToken();
   const refreshToken = await user.generateRefreshToken();
   return { refreshToken, accessToken };
@@ -16,12 +14,16 @@ async function getAccessAndRefreshToken(userId) {
 const registerUser = expressAsyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
   if ([username, email, password].some((field) => !field.trim())) {
-    throw new APIError(400, "All Fields are required");
+    return res
+      .status(400)
+      .json(new APIResponse(400, {}, "All Fields are required"));
   }
 
   const existingUser = await User.findOne({ $or: [{ email }, { username }] });
   if (existingUser) {
-    throw new APIError(409, "User already exists");
+    return res
+      .status(409)
+      .json(new APIResponse(409, {}, "User already exists"));
   }
 
   const user = await User.create({
@@ -33,7 +35,11 @@ const registerUser = expressAsyncHandler(async (req, res) => {
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
-  if (!createdUser) throw new APIError(500, "Internal Server Error");
+
+  if (!createdUser)
+    return res
+      .status(500)
+      .json(new APIResponse(500, {}, "Internal Server Error"));
 
   res
     .status(201)
@@ -43,14 +49,21 @@ const registerUser = expressAsyncHandler(async (req, res) => {
 const loginUser = expressAsyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
   if (!username && !email)
-    throw new APIError(401, "Please enter username or email");
+    return res
+      .status(401)
+      .json(new APIResponse(401, {}, "Please enter username or email"));
 
   const loggedInUser = await User.findOne({ $or: [{ email }, { username }] });
-  if (!loggedInUser) throw new APIError(401, "User doesn't exist");
+  
+  if (!loggedInUser)
+    return res.status(401).json(new APIResponse(401, {}, "User doesn't exist"));
 
   const isPasswordValid = await loggedInUser.verifyPassword(password);
 
-  if (!isPasswordValid) throw new APIError(401, "Invalid Username of password");
+  if (!isPasswordValid)
+    return res
+      .status(401)
+      .json(new APIResponse(401, {}, "Invalid Username or password"));
 
   const options = {
     httpOnly: true,
@@ -61,9 +74,15 @@ const loginUser = expressAsyncHandler(async (req, res) => {
     loggedInUser._id
   );
 
+  if (accessToken.error || refreshToken.error) {
+    return res
+      .status(401)
+      .json(new APIResponse(401, {}, accessToken.error || refreshToken.error));
+  }
+
   loggedInUser.refreshToken = refreshToken;
 
-  await loggedInUser.save({ ValidateBeforeSave: false });
+  await loggedInUser.save({ validateBeforeSave: false });
 
   const userToReturn = await User.findById(loggedInUser._id).select(
     "-password -refreshToken"
@@ -86,7 +105,6 @@ const loginUser = expressAsyncHandler(async (req, res) => {
 });
 
 const logoutUser = expressAsyncHandler(async (req, res) => {
-  console.log("loggin out");
   const userId = req.user._id;
   await User.updateOne(
     { _id: userId },
@@ -96,7 +114,7 @@ const logoutUser = expressAsyncHandler(async (req, res) => {
     }
   );
   const options = {
-    HttpOnly: true,
+    httpOnly: true,
     secure: true,
   };
 
@@ -110,37 +128,45 @@ const logoutUser = expressAsyncHandler(async (req, res) => {
 const regenerateAccessToken = expressAsyncHandler(async (req, res) => {
   try {
     const incomingRefreshToken = req.cookies?.refreshToken;
-    const incomingAccessToken =  req.cookies?.accessToken
-    if (!incomingAccessToken) throw new APIError(401, "Unauthorized Request");
+    const incomingAccessToken = req.cookies?.accessToken;
+    if (!incomingAccessToken)
+      return res
+        .status(401)
+        .json(new APIResponse(401, {}, "Unauthorized Request"));
 
-    const decodedData = await jwt.verify(
+    const decodedData = jwt.verify(
       incomingAccessToken,
       process.env.ACCESS_TOKEN_SECRET
     );
 
     if (decodedData) {
-      res
-      .status(200)
-      .json(
-        new APIResponse(
-          200,
-          {},
-          "Access Token Verified"
-        )
-      );
-      return;
+      return res
+        .status(200)
+        .json(new APIResponse(200, {}, "Access Token Verified"));
     }
 
     const user = await User.findById(decodedData._id);
 
-    if (!user) throw new new APIError(401, "User doesn't exist");
+    if (!user)
+      return res
+        .status(401)
+        .json(new APIResponse(401, {}, "User doesn't exist"));
 
-    if (incomingRefreshToken != user.refreshAccessToken)
-      throw new APIError(401, "Invalid Refresh token");
+    if (incomingRefreshToken !== user.refreshToken)
+      return res
+        .status(401)
+        .json(new APIResponse(401, {}, "Invalid Refresh token"));
 
-    const { newAccessToken } = getAccessAndRefreshToken(
-      user._id
-    );
+    const { accessToken: newAccessToken, refreshToken } =
+      await getAccessAndRefreshToken(user._id);
+
+    if (newAccessToken.error || refreshToken.error) {
+      return res
+        .status(401)
+        .json(
+          new APIResponse(401, {}, newAccessToken.error || refreshToken.error)
+        );
+    }
 
     const options = {
       httpOnly: true,
@@ -159,17 +185,24 @@ const regenerateAccessToken = expressAsyncHandler(async (req, res) => {
         )
       );
   } catch (error) {
-    throw new APIError(401, error?.message || "Invalid refresh token");
+    return res
+      .status(401)
+      .json(
+        new APIResponse(401, {}, error?.message || "Invalid refresh token")
+      );
   }
 });
 
 const changeCurrentPassword = expressAsyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
-  if (!oldPassword && !newPassword) throw new APIError(401, "Invalid Password");
+  if (!oldPassword || !newPassword)
+    return res.status(400).json(new APIResponse(400, {}, "Invalid Password"));
   const user = await User.findById(req.user._id);
-  if (!user) throw new APIError(401, "User doesn't exist");
+  if (!user)
+    return res.status(404).json(new APIResponse(404, {}, "User doesn't exist"));
   const isPasswordValid = await user.verifyPassword(oldPassword);
-  if (!isPasswordValid) throw new APIError("401", "Incorrect Password");
+  if (!isPasswordValid)
+    return res.status(401).json(new APIResponse(401, {}, "Incorrect Password"));
   user.password = newPassword;
   await user.save();
   return res
@@ -179,7 +212,8 @@ const changeCurrentPassword = expressAsyncHandler(async (req, res) => {
 
 const getUser = expressAsyncHandler(async (req, res) => {
   const user = req.user;
-  if (!user) throw new APIError(404, "User not found");
+  if (!user)
+    return res.status(404).json(new APIResponse(404, {}, "User not found"));
   res
     .status(200)
     .json(new APIResponse(200, user, "User returned Successfully"));
@@ -187,8 +221,10 @@ const getUser = expressAsyncHandler(async (req, res) => {
 
 const updateAccountDetails = expressAsyncHandler(async (req, res) => {
   const { username, email } = req.body;
-  console.log(username);
-  if (!username && !email) throw new APIError(400, "All fields are required");
+  if (!username && !email)
+    return res
+      .status(400)
+      .json(new APIResponse(400, {}, "All fields are required"));
   const user = req.user;
   if (email) user.email = email;
   if (username) user.username = username;
