@@ -56,9 +56,6 @@ userSchema.methods.generateAccessToken = async function () {
       fullName: this.fullName,
     },
     process.env.ACCESS_TOKEN_SECRET,
-    // {
-    //   expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-    // }
   );
 };
 

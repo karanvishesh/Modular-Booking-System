@@ -12,7 +12,6 @@ import { verifyJWT, verifydbAccess } from "../middlewares/auth.middleware.js";
 
 const userRouter = Router();
 
-
 userRouter.use(verifydbAccess);
 
 userRouter.route("/register").post(registerUser);
