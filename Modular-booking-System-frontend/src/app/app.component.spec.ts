@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'Booking_System' title`, () => {
+  it(`should have the 'Modular-booking-System-frontend' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('Booking_System');
+    expect(app.title).toEqual('Modular-booking-System-frontend');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, Booking_System');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, Modular-booking-System-frontend');
   });
 });

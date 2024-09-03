@@ -1,15 +1,13 @@
-import { User } from './user.model.js';
-interface JsonResponse<T> {
+import { User } from "./user.model";
+export interface JsonResponse<T> {
   data?: T;
   message: string;
   statusCode: number;
   success: boolean;
 }
 
-interface AuthData {
+export interface AuthData {
   accessToken: string;
   refreshToken: string;
   user: User;
 }
-
-export type { JsonResponse, AuthData };

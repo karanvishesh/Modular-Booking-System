@@ -1,4 +1,4 @@
-interface DatabaseModel {
+export interface DatabaseModel {
   _id?: string
   databaseName: string;
   availableBookings : number;
@@ -6,5 +6,3 @@ interface DatabaseModel {
   bookableEntityName : string;
   databaseAccessToken?: string;
 }
-
-export type {DatabaseModel}

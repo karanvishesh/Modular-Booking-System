@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of, tap } from 'rxjs';
-import { JsonResponse } from '../models/jsonresponse.model';
+import { JsonResponse } from "../models/json-response.model"
 import { DatabaseModel } from '../models/databse.model';
 
 @Injectable({

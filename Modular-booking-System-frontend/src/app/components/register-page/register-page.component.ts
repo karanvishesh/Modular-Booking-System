@@ -26,7 +26,7 @@ export class RegisterPageComponent {
   onSubmit(): void {
     this.authService
       .register(this.username, this.email, this.password)
-      .subscribe((res) => {
+      .subscribe((res:any) => {
         this.routeToLogin();
       });
   }

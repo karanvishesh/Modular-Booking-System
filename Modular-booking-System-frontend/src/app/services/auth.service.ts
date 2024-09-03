@@ -3,13 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { catchError, tap } from 'rxjs/operators';
-import { JsonResponse, AuthData } from '../models/jsonresponse.model';
+import { JsonResponse, AuthData } from "../models/json-response.model";
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/auth-service/api/v1/user';
+  private apiUrl = 'https://modular-booking-system.onrender.com/api/v1/user';
 
   private userSubject = new BehaviorSubject<any>(null);
   user$ = this.userSubject.asObservable();
@@ -47,7 +47,7 @@ export class AuthService {
         { withCredentials: true }
       )
       .pipe(
-        tap((response) => {
+        tap((response : any) => {
           this.userSubject.next(response.data!.user);
           this.authStatusSubject.next(true);
           localStorage.setItem('accessToken', response.data!.accessToken);
