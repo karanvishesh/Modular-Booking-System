@@ -1,0 +1,33 @@
+<div class="min-h-screen flex items-center justify-center">
+  <form (submit)="signUp()" class="w-full max-w-md bg-white p-8 rounded shadow-md">
+    <h2 class="text-2xl font-bold mb-6">Sign Up</h2>
+    <input
+      type="text"
+      [(ngModel)]="username"
+      placeholder="Username"
+      name="username"
+      class="w-full p-2 mb-4 border rounded"
+      required
+    />
+
+    <input
+      type="password"
+      [(ngModel)]="password"
+      placeholder="Password"
+      name="password"
+      class="w-full p-2 mb-4 border rounded"
+      required
+    />
+
+    <input
+      type="text"
+      [(ngModel)]="email"
+      placeholder="Email"
+      name="email"
+      class="w-full p-2 mb-4 border rounded"
+      required
+    />
+
+    <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded">Sign Up</button>
+  </form>
+</div>

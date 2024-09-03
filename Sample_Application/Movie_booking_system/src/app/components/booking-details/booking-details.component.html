@@ -1,0 +1,12 @@
+<div class="min-h-screen p-6">
+  <h2 class="text-3xl font-bold mb-4">Booking Details</h2>
+  <div *ngIf="booking">
+    <h3 class="text-xl font-semibold">{{ booking.name }}</h3>
+    <p>{{ booking.description }}</p>
+    <p>Status: {{ booking.status }}</p>
+    <p>Start Time: {{ booking.startTime }}</p>
+    <p>End Time: {{ booking.endTime }}</p>
+    <button (click)="cancelBooking()" class="bg-red-500 text-white p-2 rounded mt-4">Cancel Booking</button>
+    <button (click)="updateBooking()" class="bg-yellow-500 text-white p-2 rounded mt-4">Update Booking</button>
+  </div>
+</div>

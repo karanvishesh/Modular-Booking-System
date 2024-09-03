@@ -1,0 +1,65 @@
+<!-- src/app/components/database-list/database-list.component.html -->
+<div class="bg-gray-100 font-sans flex flex-col min-h-screen">
+  <nav class="bg-blue-600 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="text-white text-2xl font-bold">Movie Booking System</div>
+      <div class="flex items-center space-x-4">
+        <a href="#" class="text-white hover:text-blue-300">Home</a>
+        <a href="#" class="text-white hover:text-blue-300">About</a>
+        <a href="#" class="text-white hover:text-blue-300">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto p-6 flex-1">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-3xl font-bold text-gray-800">Welcome to Your Dashboard</h1>
+      <div class="text-gray-700">Hi Anonymous</div>
+    </div>
+    <div class="flex justify-end items-center mb-4">
+      <button
+        class="bg-red-500 text-white font-bold py-2 px-4 rounded-full hover:bg-red-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-opacity-50"
+        (click)="logout()"
+      >
+        Logout
+      </button>
+    </div>
+
+    <div class="bg-white shadow-lg rounded-lg p-6">
+      @if(slots!.length > 0) {
+      <div>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">All slots</h2>
+        <ul class="space-y-4">
+          @for(slot of slots; track slot) {
+          <li class="flex justify-between items-center p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
+            <span class="text-gray-800 font-medium">{{slot.name}}</span>
+            @if(slot.status == "available"){
+              <button
+                class="bg-green-500 text-white font-bold py-2 px-4 rounded-full hover:bg-green-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-opacity-50"
+                (click)="openBookingDialog(slot)"
+              >
+                Book
+              </button>
+            }
+            @else{
+              <button
+                class="bg-red-500 text-white font-bold py-2 px-4 rounded-full hover:bg-red  -600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-opacity-50"
+                (click)="viewBooking(slot._id)"
+              >
+                Booked
+              </button>
+            }
+          </li>
+          }
+        </ul>
+      </div>
+      } @else {
+      <p class="text-gray-600">You currently have no bookings.</p>
+      }
+    </div>
+  </div>
+
+  <footer class="bg-gray-800 text-white text-center py-4 mt-auto">
+    <p>&copy; 2024 Booking System. All rights reserved.</p>
+  </footer>
+</div>
