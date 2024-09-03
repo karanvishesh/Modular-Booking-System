@@ -8,7 +8,7 @@ import { DatabaseModel } from '../models/databse.model';
   providedIn: 'root',
 })
 export class ParentDatabaseService {
-  private apiUrl = 'http://localhost:8000/db-management-service/api/v1/db';
+  private apiUrl = 'https://database-management-service.onrender.com/api/v1/db';
 
   constructor(private http: HttpClient) {}
 
