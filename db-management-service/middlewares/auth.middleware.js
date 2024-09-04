@@ -5,9 +5,7 @@ import expressAsyncHandler from "express-async-handler";
 
 const verifyJWT = expressAsyncHandler(async (req, res, next) => {
   try {
-    const token = 
-      req.cookies?.accessToken ||
-      req.header("Authorization")?.replace("Bearer ", "");
+    const token = req.header("X-access-token")?.replace("Bearer ", "");
 
     if (!token) {
       return res.status(401).json(new APIError(401, "Unauthorized request"));

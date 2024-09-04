@@ -9,7 +9,9 @@ import { JsonResponse, AuthData } from "../models/json-response.model";
   providedIn: 'root',
 })
 export class AuthService {
+
   private apiUrl = 'https://modular-booking-system.onrender.com/api/v1/user';
+  // private apiUrl = 'http://localhost:8000/auth-service/api/v1/user';
 
   private userSubject = new BehaviorSubject<any>(null);
   user$ = this.userSubject.asObservable();
@@ -28,8 +30,7 @@ export class AuthService {
         username,
         email,
         password,
-      },
-      { withCredentials: true }
+      }
     );
   }
 
@@ -44,7 +45,6 @@ export class AuthService {
           username,
           password,
         },
-        { withCredentials: true }
       )
       .pipe(
         tap((response : any) => {
@@ -61,9 +61,8 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    console.log('logging out');
     return this.http
-      .post(`${this.apiUrl}/logout`, {}, { withCredentials: true })
+      .post(`${this.apiUrl}/logout`, {})
       .pipe(
         tap(() => {
           console.log('logged out successfully');

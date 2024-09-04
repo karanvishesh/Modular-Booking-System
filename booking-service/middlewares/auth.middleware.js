@@ -44,7 +44,7 @@ const verifydbAccess = expressAsyncHandler(async (req, res, next) => {
 
 const verifyJWT = expressAsyncHandler(async (req, res, next) => {
   try {
-    const token = req.cookies?.accessToken;
+    const token = req.header("X-access-token")?.replace("Bearer ", "");
     if (!token) {
       return res.status(401).json(new APIResponse(401, {}, "Unauthorized request"));
     }

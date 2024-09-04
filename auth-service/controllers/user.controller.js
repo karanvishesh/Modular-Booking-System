@@ -65,11 +65,6 @@ const loginUser = expressAsyncHandler(async (req, res) => {
       .status(401)
       .json(new APIResponse(401, {}, "Invalid Username or password"));
 
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-
   const { accessToken, refreshToken } = await getAccessAndRefreshToken(
     loggedInUser._id
   );
@@ -89,8 +84,6 @@ const loginUser = expressAsyncHandler(async (req, res) => {
   );
   res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
     .json(
       new APIResponse(
         200,
@@ -120,8 +113,6 @@ const logoutUser = expressAsyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
     .json(new APIResponse(200, {}, "User logged Out"));
 });
 
@@ -175,8 +166,6 @@ const regenerateAccessToken = expressAsyncHandler(async (req, res) => {
 
     res
       .status(200)
-      .cookie("accessToken", newAccessToken, options)
-      .cookie("refreshToken", refreshToken, options)
       .json(
         new APIResponse(
           200,

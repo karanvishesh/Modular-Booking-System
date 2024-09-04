@@ -8,17 +8,16 @@ import { DatabaseModel } from '../models/databse.model';
   providedIn: 'root',
 })
 export class ParentDatabaseService {
-  private apiUrl = 'https://database-management-service.onrender.com/api/v1/db';
+  // private apiUrl = 'http://localhost:8000/db-management-service/api/v1/db';
+  private apiUrl = 'https://database-management-service.onrender.com//api/v1/db';
 
   constructor(private http: HttpClient) {}
 
   createDatabase(dbData : DatabaseModel): Observable<any> {
-    console.log("asdfsdf", dbData);
     return this.http
       .post(
         `${this.apiUrl}/create-database`,
-        dbData ,
-        { withCredentials: true }
+        dbData
       )
       .pipe(
         tap((res) => {
@@ -33,9 +32,7 @@ export class ParentDatabaseService {
 
   getDatabases(): Observable<JsonResponse<DatabaseModel[]>> {
     return this.http
-      .get<JsonResponse<DatabaseModel[]>>(`${this.apiUrl}`, {
-        withCredentials: true,
-      })
+      .get<JsonResponse<DatabaseModel[]>>(`${this.apiUrl}`)
       .pipe(
         tap((res) => {
           console.log('Databases retrieved:', res);
@@ -54,11 +51,9 @@ export class ParentDatabaseService {
 
   getDatabaseById(databaseId: string): Observable<JsonResponse<DatabaseModel>> {
     return this.http
-      .get<JsonResponse<DatabaseModel>>(`${this.apiUrl}/${databaseId}`, {
-        withCredentials: true,
-      })
+      .get<JsonResponse<DatabaseModel>>(`${this.apiUrl}/${databaseId}`)
       .pipe(
-        tap((res) => {
+        tap((res : any) => {
         }),
         catchError((error) => {
           this.handleError(error);

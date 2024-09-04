@@ -10,7 +10,7 @@ import { JsonResponse, AuthData } from '../models/jsonresponse.model';
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8000/booking-service/api/v1/user';
-  private dbAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NmQ1ZDg1YjEyMmYyYmQwM2RjN2I0MTEiLCJkYXRhYmFzZU5hbWUiOiJNb3ZpZV9Cb29raW5nX1N5c3RlbSIsInVzZXJJZCI6IjY2ZDVkODNkYWExMDUzMTVjYTM0OWI3NSIsImlhdCI6MTcyNTI5MDU4N30.NAbAlO4F6eSO9rEDMM9S7SNbQ0Z-St51tFiOkTohOgM";
+  private dbAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NmQ4YzBhYTMzZTZhYzdmNzAyOGY0NWEiLCJkYXRhYmFzZU5hbWUiOiJNb3ZpZV9Cb29raW5nX1N5c3RlbSIsInVzZXJJZCI6IjY2ZDhjMDgzZTFlOWY3ZWFiOTU2MzAzNSIsImlhdCI6MTcyNTQ4MTEzMH0.NlC_cm2vGKLBt9dGB6LKZEUYd1tihRWYhRwrjHOUdqM";
   private userSubject = new BehaviorSubject<any>(null);
   user$ = this.userSubject.asObservable();
 
@@ -34,7 +34,7 @@ export class AuthService {
         email,
         password,
       },
-      { withCredentials: true, headers: { 'Authorization': `Bearer ${this.dbAccessToken}` }},
+      { headers: { 'Authorization': `Bearer ${this.dbAccessToken}` }},
     );
   }
 
@@ -49,7 +49,7 @@ export class AuthService {
           username,
           password,
         },
-        { withCredentials: true , headers: { 'Authorization': `Bearer ${this.dbAccessToken}` }}
+        { headers: { 'Authorization': `Bearer ${this.dbAccessToken}` }}
       )
       .pipe(
         tap((response: any) => {
@@ -68,7 +68,7 @@ export class AuthService {
   logout(): Observable<any> {
     console.log('logging out');
     return this.http
-      .post(`${this.apiUrl}/logout`, {}, { withCredentials: true, headers: { 'Authorization': `Bearer ${this.dbAccessToken}` } })
+      .post(`${this.apiUrl}/logout`, {}, {headers: { 'Authorization': `Bearer ${this.dbAccessToken}` } })
       .pipe(
         tap(() => {
           console.log('logged out successfully');
