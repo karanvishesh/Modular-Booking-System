@@ -8,11 +8,18 @@
       Log In
     </h2>
 
+     @if(loading){
+       <div class="flex justify-center mb-6">
+         <div class="loader"></div>
+       </div>
+     }
+
+     @else{
     <form (ngSubmit)="onSubmit()">
       <div class="mb-4">
-        <label for="username" class="block text-gray-700 font-semibold mb-2"
-          >Username</label
-        >
+        <label for="username" class="block text-gray-700 font-semibold mb-2">
+          Username
+        </label>
         <input
           type="text"
           id="username"
@@ -25,9 +32,9 @@
       </div>
 
       <div class="mb-6">
-        <label for="password" class="block text-gray-700 font-semibold mb-2"
-          >Password</label
-        >
+        <label for="password" class="block text-gray-700 font-semibold mb-2">
+          Password
+        </label>
         <div class="relative">
           <input
             [type]="showPassword ? 'text' : 'password'"
@@ -63,6 +70,7 @@
         New here? <span class="underline">Sign up</span>
       </button>
     </form>
+  }
   </div>
 
   <div class="hidden lg:block lg:w-1/2 bg-cover bg-center"></div>
