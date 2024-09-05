@@ -10,6 +10,14 @@
     </div>
   </nav>
 
+  @if(loading) {
+    <div class="flex justify-center mt-64 mb-4">
+      <div class="loader"></div>
+    </div>
+  }
+
+  @else{
+
   <div class="container mx-auto p-6 flex-1">
     <button
       class="bg-gray-500 text-white font-bold py-2 px-4 rounded-full mb-6 hover:bg-gray-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
@@ -66,6 +74,7 @@
       </div>
     </div>
   </div>
+}
 
   <footer class="bg-gray-800 text-white text-center py-4 mt-auto">
     <p>&copy; 2024 Booking System. All rights reserved.</p>

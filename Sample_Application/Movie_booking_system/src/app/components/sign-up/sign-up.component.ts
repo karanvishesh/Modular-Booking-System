@@ -18,7 +18,6 @@ export class SignupComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   signUp() {
-    console.log(this.username, this.password, this.email, "user");
     this.authService
       .register(this.username, this.email, this.password)
       .subscribe(() => {

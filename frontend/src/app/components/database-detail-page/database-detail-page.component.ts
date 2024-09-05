@@ -12,7 +12,7 @@ import { DatabaseModel } from '../../models/databse.model';
 export class DatabaseDetailPageComponent implements OnInit {
   database!: DatabaseModel;
   showTokens: boolean = false;
-
+  loading: boolean = true;
   constructor(
     private route: ActivatedRoute,
     private parentDatabaseService: ParentDatabaseService,
@@ -25,18 +25,20 @@ export class DatabaseDetailPageComponent implements OnInit {
   }
 
   fetchDatabaseDetails(id: string): void {
-    // Replace with your API call to fetch database details
+    this.loading = true;
     this.parentDatabaseService.getDatabaseById(id).subscribe(
       (response) => {
         if (response.success) {
           this.database = response.data as DatabaseModel;
         }
+        this.loading = false;
       },
       (error) => {
         console.error(
           'An error occurred while fetching database details:',
           error
         );
+        this.loading = false;
       }
     );
   }
@@ -54,7 +56,7 @@ export class DatabaseDetailPageComponent implements OnInit {
       () => {
         alert('Token copied to clipboard!');
       },
-      (err) => {
+      (err : any) => {
         console.error('Failed to copy text: ', err);
       }
     );

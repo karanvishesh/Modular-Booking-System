@@ -10,7 +10,7 @@ import { JsonResponse, AuthData } from '../models/jsonresponse.model';
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8000/booking-service/api/v1/user';
-  private dbAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NmQ4YzBhYTMzZTZhYzdmNzAyOGY0NWEiLCJkYXRhYmFzZU5hbWUiOiJNb3ZpZV9Cb29raW5nX1N5c3RlbSIsInVzZXJJZCI6IjY2ZDhjMDgzZTFlOWY3ZWFiOTU2MzAzNSIsImlhdCI6MTcyNTQ4MTEzMH0.NlC_cm2vGKLBt9dGB6LKZEUYd1tihRWYhRwrjHOUdqM";
+  private dbAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NmQ5YWE1NDM1ODBiN2RjZWM1YWUzYmUiLCJkYXRhYmFzZU5hbWUiOiJtb3ZpZV9ib29raW5nIiwidXNlcklkIjoiNjZkOWFhMzJiMDM3YjFjYTRjZmQ2NjVjIiwiaWF0IjoxNzI1NTQwOTQ4fQ.jPEzdSkowOGYTU-I6CIOTC_atWJj7gjD4OQ_Bi7LMwM';
   private userSubject = new BehaviorSubject<any>(null);
   user$ = this.userSubject.asObservable();
 

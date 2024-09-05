@@ -1,4 +1,10 @@
-<div class="p-6 bg-white rounded-lg shadow-lg">
+<div class="relative p-6 bg-white rounded-lg shadow-lg">
+  @if(loading) {
+    <div class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+      <div class="loader"></div>
+    </div>
+  }
+
   <h2 class="text-xl font-bold mb-6 text-gray-800">Create New Database</h2>
 
   <form (ngSubmit)="onSubmit()" #databaseForm="ngForm">
@@ -81,7 +87,7 @@
       <button
         type="submit"
         class="bg-blue-500 text-white font-bold py-2 px-4 rounded-full hover:bg-blue-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
-        [disabled]="!databaseForm.valid"
+        [disabled]="!databaseForm.valid || loading"
       >
         Create Database
       </button>

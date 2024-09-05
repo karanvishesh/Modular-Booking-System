@@ -21,6 +21,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
 
   databases: DatabaseModel[] = [];
   errorMessage: string = '';
+  loading: boolean = true;
 
   constructor(
     private authService: AuthService,
@@ -39,7 +40,12 @@ export class HomePageComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    this.authService.logout().subscribe();
+    this.loading = true;
+    this.authService.logout().subscribe(
+      () => {
+        this.loading = false;
+      }
+    );
   }
 
   openCreateDatabaseDialog(): void {
@@ -51,12 +57,12 @@ export class HomePageComponent implements OnInit, OnDestroy {
       .afterClosed()
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(() => {
-        // Refresh the databases list after the dialog is closed
         this.fetchDatabases();
       });
   }
 
   fetchDatabases(): void {
+    this.loading = true;
     this.parentDatabaseService
       .getDatabases()
       .pipe(takeUntil(this.unsubscribe$))
@@ -66,12 +72,13 @@ export class HomePageComponent implements OnInit, OnDestroy {
             this.databases = response.data;
             this.errorMessage = '';
           } else {
-            this.errorMessage =
-              'You can create databases to start using the system.';
+            this.errorMessage = 'You can create databases to start using the system.';
           }
+          this.loading = false;
         },
         (error) => {
           this.errorMessage = 'An error occurred while fetching databases.';
+          this.loading = false;
         }
       );
   }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { ToastService } from '../../services/toast.service'; // Assuming you have a toast service
+import { ToastService } from '../../services/toast.service';
 import { FormsModule } from '@angular/forms';
 import { ParentDatabaseService } from '../../services/parent-database.service';
 import { DatabaseModel } from '../../models/databse.model';
@@ -16,6 +16,7 @@ export class CreateDatabaseDialogComponent {
   bookerEntityName: string = '';
   bookableEntityName: string = '';
   availableBookings: number = 0;
+  loading: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<CreateDatabaseDialogComponent>,
@@ -24,6 +25,7 @@ export class CreateDatabaseDialogComponent {
   ) {}
 
   onSubmit() {
+    this.loading = true;
     this.toastService.show('Creating database...');
     const db: DatabaseModel = {
       databaseName: this.databaseName,
@@ -31,12 +33,16 @@ export class CreateDatabaseDialogComponent {
       bookableEntityName: this.bookableEntityName,
       availableBookings: this.availableBookings,
     };
-    console.log(db);
-    this.parentDatabaseService
-      .createDatabase(db)
-      .subscribe(() => {
+    this.parentDatabaseService.createDatabase(db).subscribe(
+      () => {
         this.toastService.show('Database Created');
+        this.loading = false; // Stop the loader after success
         this.dialogRef.close();
-      });
+      },
+      (error) => {
+        this.toastService.show('Error creating database');
+        this.loading = false;
+      }
+    );
   }
 }

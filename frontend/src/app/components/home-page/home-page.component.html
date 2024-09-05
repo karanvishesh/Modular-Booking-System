@@ -32,7 +32,13 @@
         </button>
       </div>
 
-      @if(databases.length > 0) {
+      @if(loading) {
+        <div class="flex justify-center mb-4">
+          <div class="loader"></div>
+        </div>
+      }
+
+      @if(!loading && databases.length > 0) {
       <div>
         <h2 class="text-xl font-semibold text-gray-800 mb-4">Your Databases</h2>
         <ul class="space-y-4">
@@ -49,7 +55,7 @@
           }
         </ul>
       </div>
-      } @else {
+      } @else if(!loading) {
       <p class="text-gray-600">You currently have no databases. {{ errorMessage }}</p>
       }
     </div>
