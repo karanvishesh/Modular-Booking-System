@@ -3,20 +3,13 @@
     <p class="text-2xl font-bold text-center text-blue-600 mb-4">Modular Booking System</p>
 
     <h2 class="text-3xl font-semibold text-center text-gray-800 mb-6">Sign Up</h2>
-    @if(loading){
-      <div class="flex justify-center mb-6">
-        <div class="loader"></div>
-      </div>
-    }
-    @else{
-    <form (ngSubmit)="onSubmit()">
+    <form (ngSubmit)="onSubmit()" [formGroup]="registerForm!">
       <div class="mb-4">
         <label for="username" class="block text-gray-700 font-semibold mb-2">Username</label>
         <input
           type="text"
           id="username"
-          [(ngModel)]="username"
-          name="username"
+          formControlName="username"
           required
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
           placeholder="Enter your username"
@@ -28,8 +21,7 @@
         <input
           type="email"
           id="email"
-          [(ngModel)]="email"
-          name="email"
+          formControlName="email"
           required
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
           placeholder="Enter your email address"
@@ -42,11 +34,10 @@
           <input
             [type]="showPassword ? 'text' : 'password'"
             id="password"
-            [(ngModel)]="password"
-            name="password"
+            formControlName="password"
             required
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
-            placeholder="Enter your password"
+            placeholder="Enter your password (min 6 character)"
           />
           <button
             type="button"
@@ -60,10 +51,14 @@
 
       <button
         type="submit"
-        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-300"
-        [disabled]="loading"
-      >
-          <span>Sign Up</span>
+        [disabled]="!registerForm?.valid || loading"
+        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-300  disabled:bg-blue-400 disabled:cursor-not-allowed"
+       >
+       @if(loading){
+        <div class="flex justify-center align-middle">
+          <div class="loader-white loader"></div>
+        </div>
+        } @else { Sign up }
       </button>
 
       <button
@@ -74,10 +69,6 @@
         Already a User? <span class="underline">Log in</span>
       </button>
     </form>
-  }
-  </div>
 
-  <div class="hidden lg:block lg:w-1/2 bg-cover bg-center"
-    style="background-image: url('https://images.unsplash.com/photo-1517836357463-d25dfe7bdb3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');">
   </div>
 </div>

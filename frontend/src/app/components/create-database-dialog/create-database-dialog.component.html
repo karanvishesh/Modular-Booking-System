@@ -1,13 +1,15 @@
 <div class="relative p-6 bg-white rounded-lg shadow-lg">
   @if(loading) {
-    <div class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
-      <div class="loader"></div>
-    </div>
+  <div
+    class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10"
+  >
+    <div class="loader"></div>
+  </div>
   }
 
   <h2 class="text-xl font-bold mb-6 text-gray-800">Create New Database</h2>
 
-  <form (ngSubmit)="onSubmit()" #databaseForm="ngForm">
+  <form (ngSubmit)="onSubmit()" [formGroup]="dbCreationForm!">
     <div class="mb-5">
       <label for="databaseName" class="block text-gray-700 font-semibold mb-2">
         Database Name
@@ -15,79 +17,90 @@
       <input
         type="text"
         id="databaseName"
-        [(ngModel)]="databaseName"
-        name="databaseName"
+        formControlName="databaseName"
         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
         placeholder="Enter database name"
-        required
-        #nameInput="ngModel"
       />
-      @if(nameInput.invalid && nameInput.touched) {
+      @if(!dbCreationForm!.controls['databaseName'].valid &&
+      (dbCreationForm!.controls['databaseName'].dirty
+      ||dbCreationForm!.controls['databaseName'].touched)) {
       <div class="text-red-500 mt-2 text-sm">Database name is required.</div>
       }
     </div>
     <div class="mb-5">
-      <label for="bookerEntityName" class="block text-gray-700 font-semibold mb-2">
+      <label
+        for="bookerEntityName"
+        class="block text-gray-700 font-semibold mb-2"
+      >
         Booker Entity Name
       </label>
       <input
         type="text"
         id="bookerEntityName"
-        [(ngModel)]="bookerEntityName"
-        name="bookerEntityName"
+        formControlName="bookerEntityName"
         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
         placeholder="Enter Booker Entity name"
-        required
-        #bookerEntityNameInput="ngModel"
       />
-      @if(bookerEntityNameInput.invalid && bookerEntityNameInput.touched) {
-      <div class="text-red-500 mt-2 text-sm">Booker Entity Name is required.</div>
+      @if(!dbCreationForm!.controls['bookerEntityName'].valid &&
+      (dbCreationForm!.controls['bookerEntityName'].dirty
+      ||dbCreationForm!.controls['bookerEntityName'].touched)) {
+      <div class="text-red-500 mt-2 text-sm">
+        Booker Entity Name is required.
+      </div>
       }
     </div>
 
     <div class="mb-5">
-      <label for="bookableEntityName" class="block text-gray-700 font-semibold mb-2">
+      <label
+        for="bookableEntityName"
+        class="block text-gray-700 font-semibold mb-2"
+      >
         Bookable Entity Name
       </label>
       <input
         type="text"
         id="bookableEntityName"
-        [(ngModel)]="bookableEntityName"
-        name="bookableEntityName"
+        formControlName="bookableEntityName"
         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
         placeholder="Enter Bookable Entity name"
-        required
-        #bookableEntityNameInput="ngModel"
       />
-      @if(bookableEntityNameInput.invalid && bookableEntityNameInput.touched) {
-      <div class="text-red-500 mt-2 text-sm">Bookable Entity Name is required.</div>
+      @if(!dbCreationForm!.controls['bookableEntityName'].valid &&
+      (dbCreationForm!.controls['bookableEntityName'].dirty
+      ||dbCreationForm!.controls['bookableEntityName'].touched)) {
+      <div class="text-red-500 mt-2 text-sm">
+        Bookable Entity Name is required.
+      </div>
       }
     </div>
 
     <div class="mb-5">
-      <label for="bookableEntityName" class="block text-gray-700 font-semibold mb-2">
+      <label
+        for="bookableEntityName"
+        class="block text-gray-700 font-semibold mb-2"
+      >
         Available Booking Count
       </label>
       <input
         type="number"
         id="availableBookings"
-        [(ngModel)]="availableBookings"
-        name="availableBookings"
+        formControlName="availableBookings"
         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
         placeholder="Enter Available Booking Count"
-        required
-        #availableBookingsInput="ngModel"
       />
-      @if(availableBookingsInput.invalid && availableBookingsInput.touched) {
-      <div class="text-red-500 mt-2 text-sm">Available Booking Count is required.</div>
+      @if(!dbCreationForm!.controls['availableBookings'].valid &&
+      (dbCreationForm!.controls['availableBookings'].dirty
+      ||dbCreationForm!.controls['availableBookings'].touched)){
+      <div class="text-red-500 mt-2 text-sm">
+        Available Booking Count is required.
+      </div>
       }
     </div>
 
     <div class="flex justify-end">
       <button
         type="submit"
-        class="bg-blue-500 text-white font-bold py-2 px-4 rounded-full hover:bg-blue-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
-        [disabled]="!databaseForm.valid || loading"
+        [disabled]="!dbCreationForm?.valid || loading"
+        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-blue-400 disabled:cursor-not-allowed"
       >
         Create Database
       </button>

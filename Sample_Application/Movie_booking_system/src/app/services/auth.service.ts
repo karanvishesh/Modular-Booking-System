@@ -22,11 +22,6 @@ export class AuthService {
   }
 
   register(username: string, email: string, password: string): Observable<any> {
-    console.log(  {
-      username,
-      email,
-      password,
-    });
     return this.http.post(
       `${this.apiUrl}/register`,
       {
@@ -66,12 +61,10 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    console.log('logging out');
     return this.http
       .post(`${this.apiUrl}/logout`, {}, {headers: { 'Authorization': `Bearer ${this.dbAccessToken}` } })
       .pipe(
         tap(() => {
-          console.log('logged out successfully');
           this.userSubject.next(null);
           this.authStatusSubject.next(false);
           localStorage.removeItem('accessToken');

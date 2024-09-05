@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { catchError, tap } from 'rxjs/operators';
-import { JsonResponse, AuthData } from "../models/json-response.model";
+import { JsonResponse, AuthData } from '../models/json-response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -24,14 +24,13 @@ export class AuthService {
   }
 
   register(username: string, email: string, password: string): Observable<any> {
-    return this.http.post(
-      `${this.apiUrl}/register`,
-      {
+    return this.http
+      .post(`${this.apiUrl}/register`, {
         username,
         email,
         password,
-      }
-    );
+      })
+      .pipe(catchError(this.handleError));
   }
 
   login(
@@ -39,43 +38,31 @@ export class AuthService {
     password: string
   ): Observable<JsonResponse<AuthData> | null> {
     return this.http
-      .post<JsonResponse<AuthData>>(
-        `${this.apiUrl}/login`,
-        {
-          username,
-          password,
-        },
-      )
+      .post<JsonResponse<AuthData>>(`${this.apiUrl}/login`, {
+        username,
+        password,
+      })
       .pipe(
-        tap((response : any) => {
+        tap((response: any) => {
           this.userSubject.next(response.data!.user);
           this.authStatusSubject.next(true);
           localStorage.setItem('accessToken', response.data!.accessToken);
           this.router.navigate(['/home']);
         }),
-        catchError((error) => {
-          this.handleError(error);
-          return of(null);
-        })
+        catchError(this.handleError)
       );
   }
 
   logout(): Observable<any> {
-    return this.http
-      .post(`${this.apiUrl}/logout`, {})
-      .pipe(
-        tap(() => {
-          console.log('logged out successfully');
-          this.userSubject.next(null);
-          this.authStatusSubject.next(false);
-          localStorage.removeItem('accessToken');
-          this.router.navigate(['/login']);
-        }),
-        catchError((error) => {
-          this.handleError(error);
-          return of(null);
-        })
-      );
+    return this.http.post(`${this.apiUrl}/logout`, {}).pipe(
+      tap(() => {
+        this.userSubject.next(null);
+        this.authStatusSubject.next(false);
+        localStorage.removeItem('accessToken');
+        this.router.navigate(['/login']);
+      }),
+      catchError(this.handleError)
+    );
   }
 
   isAuthenticated(): Observable<boolean> {
@@ -90,14 +77,36 @@ export class AuthService {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       const token = localStorage.getItem('accessToken');
       if (token) {
-          this.authStatusSubject.next(true);
+        this.authStatusSubject.next(true);
       } else {
         this.authStatusSubject.next(false);
       }
     }
   }
 
-  private handleError(error: any): void {
-    console.error('An error occurred:', error);
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'An unknown error occurred!';
+    if (error.status === 400) {
+      errorMessage =
+        error.error.message || 'Bad Request. Please check your input.';
+    } else if (error.status === 401) {
+      errorMessage =
+        error.error.message || 'Unauthorized. Please check your credentials.';
+    } else if (error.status === 403) {
+      errorMessage =
+        error.error.message ||
+        'Forbidden. You do not have permission to access this resource.';
+    } else if (error.status === 404) {
+      errorMessage = error.error.message || 'Resource not found.';
+    } else if (error.status === 500) {
+      errorMessage =
+        error.error.message || 'Internal Server Error. Please try again later.';
+    } else if (error.status === 503) {
+      errorMessage =
+        error.error.message || 'Service Unavailable. Please try again later.';
+    } else {
+      errorMessage = error.error.message || 'An unknown error occurred!';
+    }
+    return throwError(() => new Error(errorMessage));
   }
 }

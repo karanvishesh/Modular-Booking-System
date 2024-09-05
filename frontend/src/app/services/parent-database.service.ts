@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, Observable, of, tap, throwError } from 'rxjs';
 import { JsonResponse } from "../models/json-response.model"
 import { DatabaseModel } from '../models/databse.model';
 
@@ -20,13 +20,9 @@ export class ParentDatabaseService {
         dbData
       )
       .pipe(
-        tap((res) => {
-          console.log(res);
+        tap((res : any) => {
         }),
-        catchError((error) => {
-          this.handleError(error);
-          return of(null);
-        })
+        catchError(this.handleError)
       );
   }
 
@@ -34,18 +30,9 @@ export class ParentDatabaseService {
     return this.http
       .get<JsonResponse<DatabaseModel[]>>(`${this.apiUrl}`)
       .pipe(
-        tap((res) => {
-          console.log('Databases retrieved:', res);
+        tap((res : any) => {
         }),
-        catchError((error) => {
-          this.handleError(error);
-          return of({
-            statusCode: 500,
-            message: 'An error occurred',
-            data: [],
-            success : false
-          });
-        })
+        catchError(this.handleError)
       );
   }
 
@@ -55,18 +42,34 @@ export class ParentDatabaseService {
       .pipe(
         tap((res : any) => {
         }),
-        catchError((error) => {
-          this.handleError(error);
-          return of({
-            statusCode: 500,
-            message: 'An error occurred',
-            success: false
-          });
-        })
+        catchError(this.handleError)
       );
   }
 
-  private handleError(error: any): void {
-    console.error('An error occurred:', error);
+
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'An unknown error occurred!';
+    if (error.status === 400) {
+      errorMessage =
+        error.error.message || 'Bad Request. Please check your input.';
+    } else if (error.status === 401) {
+      errorMessage =
+        error.error.message || 'Unauthorized. Please check your credentials.';
+    } else if (error.status === 403) {
+      errorMessage =
+        error.error.message ||
+        'Forbidden. You do not have permission to access this resource.';
+    } else if (error.status === 404) {
+      errorMessage = error.error.message || 'Resource not found.';
+    } else if (error.status === 500) {
+      errorMessage =
+        error.error.message || 'Internal Server Error. Please try again later.';
+    } else if (error.status === 503) {
+      errorMessage =
+        error.error.message || 'Service Unavailable. Please try again later.';
+    } else {
+      errorMessage = error.error.message || 'An unknown error occurred!';
+    }
+    return throwError(() => new Error(errorMessage));
   }
 }

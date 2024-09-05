@@ -7,9 +7,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class ToastService {
   constructor(private snackBar: MatSnackBar) {}
 
-  show(message: string) {
+  show(message: string, time : number = 3000) {
     this.snackBar.open(message, 'Close', {
-      duration: 3000,
+      duration: time,
     });
   }
 }

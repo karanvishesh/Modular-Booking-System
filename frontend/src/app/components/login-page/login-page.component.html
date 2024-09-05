@@ -8,14 +8,7 @@
       Log In
     </h2>
 
-     @if(loading){
-       <div class="flex justify-center mb-6">
-         <div class="loader"></div>
-       </div>
-     }
-
-     @else{
-    <form (ngSubmit)="onSubmit()">
+    <form [formGroup]="loginForm!" (ngSubmit)="onSubmit()">
       <div class="mb-4">
         <label for="username" class="block text-gray-700 font-semibold mb-2">
           Username
@@ -23,12 +16,15 @@
         <input
           type="text"
           id="username"
-          [(ngModel)]="username"
-          name="username"
-          required
+          formControlName="username"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
           placeholder="Enter your username"
         />
+        @if(!loginForm!.controls['username'].valid &&
+        (loginForm!.controls['username'].dirty
+        ||loginForm!.controls['username'].touched)){
+        <p class="text-red-600 text-sm mt-1">Please enter valid username</p>
+        }
       </div>
 
       <div class="mb-6">
@@ -39,9 +35,7 @@
           <input
             [type]="showPassword ? 'text' : 'password'"
             id="password"
-            [(ngModel)]="password"
-            name="password"
-            required
+            formControlName="password"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
             placeholder="Enter your password"
           />
@@ -53,13 +47,23 @@
             {{ showPassword ? "Hide" : "Show" }}
           </button>
         </div>
+        @if(!loginForm!.controls['password'].valid &&
+        (loginForm!.controls['password'].dirty
+        ||loginForm!.controls['password'].touched)){
+        <p class="text-red-600 text-sm mt-1">Please enter valid password</p>
+        }
       </div>
 
       <button
         type="submit"
-        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+        [disabled]="!loginForm?.valid || loading"
+        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-blue-400 disabled:cursor-not-allowed"
       >
-        Log in
+        @if(loading){
+        <div class="flex justify-center align-middle">
+          <div class="loader-white loader"></div>
+        </div>
+        } @else { Log in }
       </button>
 
       <button
@@ -70,8 +74,5 @@
         New here? <span class="underline">Sign up</span>
       </button>
     </form>
-  }
   </div>
-
-  <div class="hidden lg:block lg:w-1/2 bg-cover bg-center"></div>
 </div>
