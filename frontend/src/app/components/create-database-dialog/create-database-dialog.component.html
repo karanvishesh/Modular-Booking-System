@@ -10,6 +10,8 @@
   <h2 class="text-xl font-bold mb-6 text-gray-800">Create New Database</h2>
 
   <form (ngSubmit)="onSubmit()" [formGroup]="dbCreationForm!">
+
+
     <div class="mb-5">
       <label for="databaseName" class="block text-gray-700 font-semibold mb-2">
         Database Name
@@ -24,75 +26,80 @@
       @if(!dbCreationForm!.controls['databaseName'].valid &&
       (dbCreationForm!.controls['databaseName'].dirty
       ||dbCreationForm!.controls['databaseName'].touched)) {
+      @if(dbCreationForm!.controls['databaseName'].errors!['required']){
       <div class="text-red-500 mt-2 text-sm">Database name is required.</div>
-      }
+      } @else if(dbCreationForm!.controls['databaseName'].errors!['invalidLength']){
+      <div class="text-red-500 mt-2 text-sm">
+        Database name must be between 1 and 63 characters long.
+      </div>
+      } @else if(dbCreationForm!.controls['databaseName'].errors!['invalidCharacters']){
+      <div class="text-red-500 mt-2 text-sm">
+        Database name cannot have spaces or any special characters (excpet _).
+      </div>
+      } @else if(dbCreationForm!.controls['databaseName'].errors!['reservedName']){
+      <div class="text-red-500 mt-2 text-sm">
+        The database name cannot be 'admin', 'local', or 'config'.
+      </div>
+      } }
     </div>
     <div class="mb-5">
       <label
         for="bookerEntityName"
         class="block text-gray-700 font-semibold mb-2"
       >
-        Booker Entity Name
+        Level 1 Entity
       </label>
       <input
         type="text"
-        id="bookerEntityName"
-        formControlName="bookerEntityName"
+        id="level1Entity"
+        formControlName="level1Entity"
         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
-        placeholder="Enter Booker Entity name"
+        placeholder=" Enter level 1 Entity (for eg Theatre, Parking)."
       />
-      @if(!dbCreationForm!.controls['bookerEntityName'].valid &&
-      (dbCreationForm!.controls['bookerEntityName'].dirty
-      ||dbCreationForm!.controls['bookerEntityName'].touched)) {
+      @if(!dbCreationForm!.controls["level1Entity"].valid &&
+      (dbCreationForm!.controls["level1Entity"].dirty
+      ||dbCreationForm!.controls["level1Entity"].touched)) {
       <div class="text-red-500 mt-2 text-sm">
-        Booker Entity Name is required.
+        Level 1 entity is required.
       </div>
       }
     </div>
 
-    <div class="mb-5">
-      <label
-        for="bookableEntityName"
-        class="block text-gray-700 font-semibold mb-2"
-      >
-        Bookable Entity Name
-      </label>
-      <input
-        type="text"
-        id="bookableEntityName"
-        formControlName="bookableEntityName"
-        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
-        placeholder="Enter Bookable Entity name"
-      />
-      @if(!dbCreationForm!.controls['bookableEntityName'].valid &&
-      (dbCreationForm!.controls['bookableEntityName'].dirty
-      ||dbCreationForm!.controls['bookableEntityName'].touched)) {
-      <div class="text-red-500 mt-2 text-sm">
-        Bookable Entity Name is required.
+    @for(control of getControlNames(); track control){
+      <div class="mb-5">
+        <label
+          for="bookerEntityName"
+          class="block text-gray-700 font-semibold mb-2"
+        >
+          {{getLabelName(control)}}
+        </label>
+        <input
+          type="text"
+          [id]="control"
+          [formControlName]="control"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
+          [placeholder]='getPlaceholder(control)'
+        />
+        @if(!dbCreationForm!.controls[control].valid &&
+        (dbCreationForm!.controls[control].dirty
+        ||dbCreationForm!.controls[control].touched)) {
+        <div class="text-red-500 mt-2 text-sm">
+          {{getLabelName(control)}} is required.
+        </div>
+        }
       </div>
-      }
-    </div>
+    }
 
     <div class="mb-5">
-      <label
-        for="bookableEntityName"
-        class="block text-gray-700 font-semibold mb-2"
-      >
-        Available Booking Count
-      </label>
-      <input
-        type="number"
-        id="availableBookings"
-        formControlName="availableBookings"
-        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
-        placeholder="Enter Available Booking Count"
-      />
-      @if(!dbCreationForm!.controls['availableBookings'].valid &&
-      (dbCreationForm!.controls['availableBookings'].dirty
-      ||dbCreationForm!.controls['availableBookings'].touched)){
-      <div class="text-red-500 mt-2 text-sm">
-        Available Booking Count is required.
-      </div>
+      @if (index > 3) {
+        <div class="text-red-500 mt-2 text-sm">
+          Cannot add more level
+        </div>
+      }
+      @else{
+        <button type="button" (click)="addLevel()" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-300">
+          Add More Level
+        </button>
       }
     </div>
 

@@ -22,6 +22,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
   databases: DatabaseModel[] = [];
   errorMessage: string = '';
   loading: boolean = true;
+  loggingOut : boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -40,10 +41,10 @@ export class HomePageComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    this.loading = true;
+    this.loggingOut = true;
     this.authService.logout().subscribe(
       () => {
-        this.loading = false;
+        this.loggingOut = false;
       }
     );
   }

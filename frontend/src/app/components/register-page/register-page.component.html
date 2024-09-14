@@ -14,7 +14,13 @@
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 focus:border-blue-500 transition duration-300"
           placeholder="Enter your username"
         />
+        @if(!registerForm!.controls['username'].valid &&
+        (registerForm!.controls['username'].dirty
+        || registerForm!.controls['username'].touched)) {
+            <div class="text-red-500 mt-2 text-sm">Username is required.</div>
+        }
       </div>
+
 
       <div class="mb-4">
         <label for="email" class="block text-gray-700 font-semibold mb-2">Email</label>
